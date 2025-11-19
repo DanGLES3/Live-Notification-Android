@@ -1,0 +1,38 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    # --- Add this step to upload the build artifacts ---
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        # Give the artifact a distinct name
+        name: android-build-artifacts
+        # The path to the directory containing the build outputs
+        # This will usually include debug and release APKs/bundles
+        path: app/build/outputs/
+        # Optional: Set retention for 7 days (default is repository setting, max 90 days)
+        # retention-days: 7
